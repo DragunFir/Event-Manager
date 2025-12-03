@@ -5,8 +5,15 @@ import os
 from fastapi import Request
 from starlette.responses import RedirectResponse
 
-ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "change-me")  # in Render als Secret setzen
+# Admin-Zugang NUR über Environment-Variablen
+ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
+
+if not ADMIN_USERNAME or not ADMIN_PASSWORD:
+    raise RuntimeError(
+        "ADMIN_USERNAME und ADMIN_PASSWORD müssen als Environment-Variablen gesetzt sein."
+    )
+
 
 def login_admin(request: Request) -> None:
     request.session["is_admin"] = True
