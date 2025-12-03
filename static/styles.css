@@ -1,0 +1,219 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f5f5f5;
+}
+
+.page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+}
+
+.container {
+    background: #ffffff;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+h1, h2 {
+    margin-top: 0;
+}
+
+.form-row {
+    margin-bottom: 0.8rem;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="date"],
+input[type="time"],
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.25rem;
+    border: 1px solid #ccc;
+    font: inherit;
+}
+
+textarea {
+    resize: vertical;
+}
+
+button,
+.button {
+    display: inline-block;
+    padding: 0.45rem 1.1rem;
+    border-radius: 0.4rem;
+    border: none;
+    background: #1976d2;
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+button:hover,
+.button:hover {
+    background: #12539b;
+}
+
+.button-secondary {
+    background: #666;
+}
+
+.button-secondary:hover {
+    background: #444;
+}
+
+.link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #1976d2;
+    cursor: pointer;
+}
+
+.link-button:hover {
+    text-decoration: underline;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.8rem;
+    font-size: 0.95rem;
+}
+
+.table th,
+.table td {
+    border: 1px solid #ddd;
+    padding: 0.35rem 0.5rem;
+    vertical-align: top;
+    text-align: left;
+}
+
+.table th {
+    background: #f0f0f0;
+}
+
+.error {
+    color: #c62828;
+}
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.5rem 1rem;
+}
+
+.slot-item {
+    border: 1px solid #ddd;
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.6rem;
+    background: #fafafa;
+}
+
+.slot-title {
+    font-weight: 600;
+}
+
+.slot-time {
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.hint {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.3rem;
+}
+
+/* Info-Box für Erklärung */
+.info-box {
+    border-left: 4px solid #1976d2;
+    background: #e8f2ff;
+    padding: 0.8rem 1rem;
+    border-radius: 0.4rem;
+    margin: 1rem 0 1.5rem;
+}
+
+.info-box h2 {
+    margin-top: 0;
+    margin-bottom: 0.4rem;
+}
+
+/* Inline-Form für Slots */
+.inline-form input,
+.inline-form button {
+    display: inline-block;
+    width: auto;
+    margin-right: 0.3rem;
+    margin-bottom: 0.3rem;
+}
+
+/* Druckbereich-Controls */
+.print-controls {
+    margin: 1rem 0 1.5rem;
+}
+
+/* Plan-Tabellen */
+.plan-table {
+    margin-top: 0.5rem;
+}
+
+.date-row td {
+    background: #e0ecff;
+    font-weight: 600;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+/* Print-Optimierung */
+@media print {
+    body {
+        background: #ffffff;
+    }
+
+    .page {
+        max-width: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .container {
+        box-shadow: none;
+        border-radius: 0;
+        padding: 1rem;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    h1, h2 {
+        page-break-after: avoid;
+    }
+
+    table {
+        page-break-inside: avoid;
+    }
+}

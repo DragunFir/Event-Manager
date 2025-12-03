@@ -1,10 +1,159 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}{{ event.title }} - DLRG{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>{{ event.title }}</h1>
+    <p>
+        {% if event.location %}<strong>Ort:</strong> {{ event.location }}<br>{% endif %}
+        {% if event.stand_number %}<strong>Stand / Einsatzort:</strong> {{ event.stand_number }}<br>{% endif %}
+        {% if event.start_date and event.end_date %}
+            <strong>Zeitraum:</strong> {{ event.start_date }} – {{ event.end_date }}<br>
+        {% elif event.start_date %}
+            <strong>Datum:</strong> {{ event.start_date }}<br>
+        {% endif %}
+    </p>
+    {% if event.description %}
+    <p>{{ event.description }}</p>
+    {% endif %}
+
+    <!-- Kurze Erklärung für Helfer -->
+    <div class="info-box no-print">
+        <h2>Wie trägst du dich ein?</h2>
+        <ol>
+            <li><strong>Gib deinen Namen</strong> oben im Formular ein (immer gleich schreiben, z.B. „Max Mustermann“).</li>
+            <li>Optional: <strong>Kontakt</strong> (Handy / E-Mail) eintragen.</li>
+            <li><strong>Schichten auswählen</strong>, in denen du Zeit hast (Aufbau, Dienst, Abbau).</li>
+            <li>Optional: <strong>Hinweis</strong> angeben (z.B. „kann erst ab 19:00“, „nur bis 21:30“).</li>
+            <li>Auf <strong>„Eintragen / Aktualisieren“</strong> klicken.</li>
+        </ol>
+        <p class="hint">
+            Du kannst deinen Eintrag jederzeit ändern: einfach <strong>mit dem gleichen Namen</strong> erneut absenden,
+            dann wird dein vorheriger Eintrag ersetzt.
+        </p>
+    </div>
+
+    <!-- Formular zum Eintragen -->
+    <div class="no-print">
+        <h2>Eintrag / Änderung</h2>
+        <form method="post" action="/e/{{ event.slug }}/signup">
+            <div class="form-row">
+                <label for="name">Name (wichtig: immer gleich schreiben, um zu ändern)</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-row">
+                <label for="contact">Kontakt (optional, z.B. Handy)</label>
+                <input type="text" id="contact" name="contact">
+            </div>
+
+            {% if event_pin_required %}
+            <div class="form-row">
+                <label for="pin">Event-PIN</label>
+                <input type="text" id="pin" name="pin">
+            </div>
+            {% endif %}
+
+            <div class="form-row">
+                <label>Schichten</label>
+                <div class="slot-grid">
+                    {% for s in slots %}
+                    <label class="slot-item">
+                        <input type="checkbox" name="selected_slots" value="{{ s.id }}">
+                        <span class="slot-title">{{ s.label }}</span><br>
+                        <span class="slot-time">
+                            {{ s.date }}
+                            –
+                            {{ "%02d:%02d"|format(s.time_start.hour, s.time_start.minute) }}
+                            bis
+                            {{ "%02d:%02d"|format(s.time_end.hour, s.time_end.minute) }}
+                        </span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label for="note">Hinweis (z.B. „kann erst ab 19:00“)</label>
+                <textarea id="note" name="note" rows="2"></textarea>
+            </div>
+
+            <button type="submit">Eintragen / Aktualisieren</button>
+        </form>
+    </div>
+
+    <!-- Übersicht: Schichten (druckbare Ansicht) -->
+    <h2>Übersicht nach Schichten</h2>
+    <table class="table plan-table">
+        <thead>
+        <tr>
+            <th>Datum</th>
+            <th>Zeitraum</th>
+            <th>Schicht</th>
+            <th>Teilnehmer</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for s in slots %}
+            {% if not loop.previtem or loop.previtem.date != s.date %}
+            <tr class="date-row">
+                <td colspan="4">
+                    <strong>{{ s.date }}</strong>
+                </td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td class="nowrap">{{ s.date }}</td>
+                <td class="nowrap">
+                    {{ "%02d:%02d"|format(s.time_start.hour, s.time_start.minute) }}
+                    –
+                    {{ "%02d:%02d"|format(s.time_end.hour, s.time_end.minute) }}
+                </td>
+                <td>{{ s.label }}</td>
+                <td>
+                    {% if slot_to_names[s.id] %}
+                        {{ ", ".join(slot_to_names[s.id]) }}
+                    {% else %}
+                        <em>noch niemand eingetragen</em>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Übersicht: Personen -->
+    <h2 style="margin-top: 2rem;">Übersicht nach Personen</h2>
+    <table class="table plan-table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Schichten</th>
+            <th>Kontakt</th>
+            <th>Hinweis</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for s in signups %}
+        <tr>
+            <td>{{ s.name }}</td>
+            <td>
+                {% set person_slots = [] %}
+                {% for link in s.slots %}
+                    {% set ps = link.slot %}
+                    {% set _ = person_slots.append(
+                        ps.label ~ " (" ~ ps.date ~ " " ~
+                        "%02d:%02d"|format(ps.time_start.hour, ps.time_start.minute) ~ "-" ~
+                        "%02d:%02d"|format(ps.time_end.hour, ps.time_end.minute) ~ ")"
+                    ) %}
+                {% endfor %}
+                {{ ", ".join(person_slots) }}
+            </td>
+            <td>{{ s.contact or "" }}</td>
+            <td>{{ s.note or "" }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

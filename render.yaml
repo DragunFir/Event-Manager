@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: event-manager
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: event-db
+          property: connectionString
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false   # im Render-Dashboard als Secret setzen
+      - key: SESSION_SECRET
+        sync: false   # zufälligen String im Dashboard setzen
+databases:
+  - name: event-db
+    plan: free

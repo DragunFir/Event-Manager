@@ -1,10 +1,95 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Events - Event-Manager{% endblock %}
 
-</body>
-</html>
+{% block body %}
+<div class="container no-print">
+    <div class="header-row">
+        <h1>Event-Manager</h1>
+        <div>
+            <a href="/admin/events/new" class="button">Neues Event</a>
+            <a href="/admin/logout" class="button button-secondary">Logout</a>
+        </div>
+    </div>
+
+    {% if events %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Titel</th>
+            <th>Zeitraum</th>
+            <th>Ort / Stand</th>
+            <th>Link</th>
+            <th>Aktionen</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for ev in events %}
+        <tr>
+            <td>{{ ev.title }}</td>
+            <td>
+                {% if ev.start_date and ev.end_date %}
+                    {{ ev.start_date }} – {{ ev.end_date }}
+                {% elif ev.start_date %}
+                    {{ ev.start_date }}
+                {% else %}
+                    –
+                {% endif %}
+            </td>
+            <td>
+                {% if ev.location %}{{ ev.location }}{% endif %}
+                {% if ev.stand_number %} (Stand {{ ev.stand_number }}){% endif %}
+            </td>
+            <td>
+                <code>/e/{{ ev.slug }}</code>
+            </td>
+            <td>
+                <a href="/admin/events/{{ ev.id }}/edit">Bearbeiten</a> |
+                <a href="/admin/events/{{ ev.id }}/slots">Schichten</a> |
+                <!-- Plan drucken: öffnet neuen Tab und löst dort print() aus -->
+                <button type="button"
+                        class="link-button"
+                        onclick="openPrintForEvent('{{ ev.slug }}')">
+                    Plan drucken
+                </button> |
+                <form method="post" action="/admin/events/{{ ev.id }}/delete" style="display:inline;"
+                      onsubmit="return confirm('Event wirklich löschen?');">
+                    <button type="submit" class="link-button">Löschen</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Noch keine Events angelegt.</p>
+    {% endif %}
+</div>
+
+<script>
+    function openPrintForEvent(slug) {
+        // öffentlichen Plan in neuem Tab öffnen
+        const url = "/e/" + slug;
+        const w = window.open(url, "_blank");
+        if (!w) {
+            alert("Pop-up Blocker blockiert das Druckfenster.");
+            return;
+        }
+        // wenn die Seite fertig geladen ist, Druckdialog auslösen
+        const onLoad = function () {
+            try {
+                w.focus();
+                w.print();
+            } catch (e) {
+                console.error(e);
+            }
+        };
+        // moderne Browser
+        if ("addEventListener" in w) {
+            w.addEventListener("load", onLoad);
+        } else {
+            // Fallback
+            w.onload = onLoad;
+        }
+    }
+</script>
+{% endblock %}

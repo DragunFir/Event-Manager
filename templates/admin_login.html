@@ -1,10 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Admin Login - Event-Manager{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Admin Login</h1>
+    <form method="post">
+        <div class="form-row">
+            <label for="username">Benutzername</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-row">
+            <label for="password">Passwort</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        <button type="submit">Einloggen</button>
+    </form>
+</div>
+{% endblock %}
