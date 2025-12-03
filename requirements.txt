@@ -2,7 +2,6 @@ fastapi
 uvicorn
 jinja2
 python-multipart
-deta
 sqlalchemy
 starlette
 itsdangerous
