@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Event bearbeiten - Event-Manager{% endblock %}
+
+{% block body %}
+<div class="container no-print">
+    <h1>{% if event %}Event bearbeiten{% else %}Neues Event{% endif %}</h1>
+
+    <form method="post">
+        <div class="form-row">
+            <label for="title">Titel</label>
+            <input type="text" id="title" name="title" required
+                   value="{{ event.title if event else '' }}">
+        </div>
+
+        <div class="form-row">
+            <label for="slug">Slug (für Link, z.B. weihnachtsmarkt-2025)</label>
+            <input type="text" id="slug" name="slug" required
+                   value="{{ event.slug if event else '' }}">
+            <small>Der öffentliche Link wird: <code>/e/&lt;slug&gt;</code></small>
+        </div>
+
+        <div class="form-row">
+            <label for="location">Ort</label>
+            <input type="text" id="location" name="location"
+                   value="{{ event.location if event else '' }}">
+        </div>
+
+        <div class="form-row">
+            <label for="stand_number">Standnummer / Einsatzort</label>
+            <input type="text" id="stand_number" name="stand_number"
+                   value="{{ event.stand_number if event else '' }}">
+        </div>
+
+        <div class="form-row">
+            <label for="start_date">Startdatum</label>
+            <input type="date" id="start_date" name="start_date"
+                   value="{{ event.start_date if event and event.start_date else '' }}">
+        </div>
+
+        <div class="form-row">
+            <label for="end_date">Enddatum</label>
+            <input type="date" id="end_date" name="end_date"
+                   value="{{ event.end_date if event and event.end_date else '' }}">
+        </div>
+
+        <div class="form-row">
+            <label for="event_pin">Event-PIN (optional, für Helfer-Seite)</label>
+            <input type="text" id="event_pin" name="event_pin"
+                   value="{{ event.event_pin if event else '' }}">
+        </div>
+
+        <div class="form-row">
+            <label for="description">Beschreibung / Hinweise</label>
+            <textarea id="description" name="description" rows="4">{{ event.description if event else '' }}</textarea>
+        </div>
+
+        <button type="submit">{% if event %}Speichern{% else %}Anlegen{% endif %}</button>
+    </form>
+
+    {% if event %}
+    <hr>
+    <h2>Schichten / Zeitslots</h2>
+    <p>
+        <a href="/admin/events/{{ event.id }}/slots" class="button">Schichten bearbeiten</a>
+        &nbsp;–&nbsp;
+        Öffentlicher Link: <code>/e/{{ event.slug }}</code>
+    </p>
+    {% endif %}
+
+    <p><a href="/admin/events">&larr; Zurück zur Event-Liste</a></p>
+</div>
+{% endblock %}
